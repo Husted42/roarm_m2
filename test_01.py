@@ -41,8 +41,7 @@ def main():
 
     try:
         while True:
-            command = input("")
-            ser.write(command.encode() + b'\n')
+            ser.write(json_command.encode() + b'\n')
     except KeyboardInterrupt:
         pass
     finally:
