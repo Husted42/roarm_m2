@@ -47,6 +47,11 @@ def main():
     finally:
         ser.close()
 
+    # Quit program
+    serial_recv_thread.join()
+    ser.close()
+    exit(0)
+
 
 if __name__ == "__main__":
     main()
