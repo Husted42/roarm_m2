@@ -3,6 +3,7 @@ from flask_apscheduler import APScheduler
 import datetime
 
 import gmail_read_name 
+import roarm_movement_test
 
 global_latest_mail = None
 
@@ -35,14 +36,17 @@ def activate_robot_arm(debug=True):
     if global_latest_mail is None:
         is_first_load = True
 
+    if is_first_load:
+        print("First load, no previous email found.")
+        global_latest_mail = gmail_read_name.read_gmail_header()
+        return False
 
-    if (is_robot_mail and is_new_mail) or is_first_load:        
-    
-        # TODO make a call to the robot arm API here
+    if is_robot_mail and is_new_mail and not is_first_load:        
         print("Variable has changed, activating robot arm...")
-    
-        # Update the latest written email
         global_latest_mail = gmail_read_name.read_gmail_header() 
+
+        roarm_movement_test.main()
+
         return True
     else:
         return False
@@ -54,6 +58,7 @@ def activate_robot_arm(debug=True):
 def home():
     return "Hello world!"
 
+@app.route('/get_latest_mail')
 def get_latest_mail():
     """Returns the latest email subject."""
     latest_mail = gmail_read_name.read_gmail_header()
