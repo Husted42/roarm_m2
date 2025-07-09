@@ -16,7 +16,7 @@ Create google credentials
 
 *Test account link*
 test the connection with `test_gmail_reader.py`
- 1) Setup path to credentials 
- 2) Add yourself as test user in google auth platform -> credentials -> credentials secret
+ 1) Setup path to credentials in the file
+ 2) Add yourself as test user in google auth platform -> credentials -> credentials secret (on their webstite)
  3) Enable API at gmail.googleapis.com/
 
