@@ -11,7 +11,7 @@ from googleapiclient.errors import HttpError
 SCOPES = ["https://www.googleapis.com/auth/gmail.readonly"]
 
 # Locate credentials file
-# TODO : Global variable - Update the path to your credentials file
+# TODO : Global variable 
 credential_file = f"{Path.home()}/Documents/CLIENT_SECRETS_copy.json"
 
 def get_header(headers, name):
@@ -24,9 +24,11 @@ def read_gmail_header(credential_file=credential_file):
     """Lists the subject of the latest email in the user's Gmail inbox."""
     creds = None
 
+    # Read credentials
     if os.path.exists("token.json"):
         creds = Credentials.from_authorized_user_file("token.json", SCOPES)
 
+    # Login
     if not creds or not creds.valid:
         if creds and creds.expired and creds.refresh_token:
             creds.refresh(Request())
@@ -36,7 +38,9 @@ def read_gmail_header(credential_file=credential_file):
         with open("token.json", "w") as token:
             token.write(creds.to_json())
 
+    # 
     try:
+        # Build the Gmail service and find the latest email subject
         service = build("gmail", "v1", credentials=creds)
         results = service.users().messages().list(userId="me", labelIds=["INBOX"], maxResults=1).execute()
         messages = results.get("messages", [])
@@ -45,6 +49,7 @@ def read_gmail_header(credential_file=credential_file):
             print("No messages found.")
             return
 
+        # Get the subject of the latest email
         for message in messages:
             msg = service.users().messages().get(userId="me", id=message["id"], format="metadata", metadataHeaders=["Subject"]).execute()
             headers = msg.get("payload", {}).get("headers", [])

@@ -9,7 +9,6 @@ import math
 ip_adress = '192.168.0.147'
 
 # Command list
-# TODO : Create a better format
 list_commands = [
     # Starting position
     {"T":102,"base":0,"shoulder":0,"elbow": math.pi/2,"hand":math.pi * 0.5,"spd":0,"acc":10},
@@ -28,9 +27,7 @@ list_commands = [
 
 def move_arm(command, ip_address):
     json_command = json.dumps(command)
-    url = f"http://{ip_address}/js?json={json_command}"
-    print(f"Sending command to {url}")
-    
+    url = f"http://{ip_address}/js?json={json_command}"    
     response = requests.get(url)
     
     # Check if the response status code is 200 (OK)
@@ -44,4 +41,4 @@ def main():
     for i in range(len(list_commands)):
         time.sleep(2)
         move_arm(list_commands[i], ip_adress)
-    exit(0)
+

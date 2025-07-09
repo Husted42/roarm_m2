@@ -5,7 +5,8 @@ import time
 import math
 
 ##### ----- Global Variables ----- #####
-ip_adress = 't'
+# TODO : Global variable - Update the IP address of your robot arm
+ip_adress = '192.168.0.147'
 
 # Command list
 # TODO : Create a better format
