@@ -3,7 +3,7 @@ from flask_apscheduler import APScheduler
 import datetime
 
 import gmail_read_name
-import roarm_movement_test
+import roarm_movement
 
 # Globals
 global_latest_mail = None
@@ -11,44 +11,43 @@ global_latest_mail = None
 app = Flask(__name__)
 
 def activate_robot_arm(debug=True):
-    """
-    This function checks if a robot arm activation email has been received.
-    """
+    '''
+    This function checks if we have received a robot arm activation email.
+    '''
+    # Sting contatining the latest email subject
     global global_latest_mail
 
-    try:
-        current_mail = gmail_read_name.read_gmail_header()
-    except Exception as e:
-        if debug:
-            print(f"[{datetime.datetime.now()}] Failed to read Gmail header: {e}")
-        return False
+    # Variable for boolean logic 
+    is_robot_mail = False
+    is_new_mail = False
+    is_first_load = False
 
     if debug:
-        print(f"\n[{datetime.datetime.now()}] Checking for robot arm email...")
-        print(f"Previous email: {global_latest_mail}")
-        print(f"Current email: {current_mail}")
+        print("\n\n", datetime.datetime.now(), " - Activating robot arm...")
+        print("Latest email subject:", global_latest_mail)
 
+    # Check if string starts with "Robot arm - "
+    if global_latest_mail is not None and global_latest_mail.lower().startswith("robot arm - "):
+        is_robot_mail = True
+    if global_latest_mail != gmail_read_name.read_gmail_header():
+         is_new_mail = True
     if global_latest_mail is None:
-        global_latest_mail = current_mail
-        print("First run: stored initial email.")
+        is_first_load = True
+
+    if is_first_load:
+        print("First load, no previous email found.")
+        global_latest_mail = gmail_read_name.read_gmail_header()
         return False
 
-    if current_mail != global_latest_mail and current_mail.lower().startswith("robot arm - "):
-        print("New activation email detected. Triggering robot arm...")
-        global_latest_mail = current_mail
+    if is_robot_mail and is_new_mail and not is_first_load:        
+        print("Variable has changed, activating robot arm...")
+        global_latest_mail = gmail_read_name.read_gmail_header() 
 
-        try:
-            roarm_movement_test.main()
-            print("Robot arm activated successfully.")
-        except Exception as e:
-            print(f"Error during robot arm activation: {e}")
-            return False
+        roarm_movement.main()
 
         return True
-
-    if debug:
-        print("No activation required.")
-    return False
+    else:
+        return False
 
 
 @app.route('/')
